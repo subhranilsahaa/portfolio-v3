@@ -7,7 +7,7 @@ import { Contact } from '../components/sections/Contact';
 import { Footer } from '../components/sections/Footer';
 
 export const Portfolio: React.FC = () => {
-  const { data } = useStorage();
+    const { data, resumeUrl } = useStorage();
 
   if (!data) return (
     <div className="min-h-screen bg-bg flex items-center justify-center text-muted">
@@ -19,7 +19,7 @@ export const Portfolio: React.FC = () => {
     <>
       <Navbar name={data.name} />
       <main className="relative z-[2]">
-        <Hero data={data} />
+          <Hero data={data} resumeUrl={resumeUrl} />
         <Skills data={data} />
         <Projects data={data} />
         <Contact data={data} />
