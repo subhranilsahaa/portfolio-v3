@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../utils/supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSave, FiPlus, FiTrash2, FiLogOut, FiLock, FiLink, FiCheck } from 'react-icons/fi';
 import { PortfolioData, Skill, Project } from '../types';
-import { DEFAULT_DATA } from '../data/defaultData';
 import { useStorage } from '../hooks/useStorage';
 
 /* ─── tiny helpers ──────────────────────────────────────────────────────── */
@@ -36,12 +37,8 @@ const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => 
    ADMIN PAGE
 ═══════════════════════════════════════════════════════════════════════════ */
 export const AdminPage: React.FC = () => {
-  const { data, adminPassword, resumeUrl, loading, saveData, changePassword, saveResumeUrl } = useStorage();
-
-  /* auth */
-  const [authed, setAuthed] = useState(false);
-  const [loginPw, setLoginPw] = useState('');
-  const [loginErr, setLoginErr] = useState('');
+  const navigate = useNavigate();
+  const { data, resumeUrl, loading, saveData, changePassword, saveResumeUrl } = useStorage();
 
   /* form state */
   const [form, setForm] = useState<PortfolioData | null>(null);
@@ -67,15 +64,11 @@ export const AdminPage: React.FC = () => {
     if (resumeUrl) setResumeInput(resumeUrl);
   }, [resumeUrl]);
 
-  /* ── Login ─────────────────────────────────────────────────────────────── */
-  const handleLogin = () => {
-    if (loginPw === adminPassword) {
-      setAuthed(true);
-      setLoginErr('');
-    } else {
-      setLoginErr('Incorrect password.');
-    }
-  };
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) navigate('/login');
+    });
+  }, [navigate]);
 
   /* ── Save portfolio data ────────────────────────────────────────────────── */
   const handleSave = async () => {
@@ -137,39 +130,6 @@ export const AdminPage: React.FC = () => {
     );
   }
 
-  /* ── Login wall ─────────────────────────────────────────────────────────── */
-  if (!authed) {
-    return (
-      <div className="min-h-screen bg-bg flex items-center justify-center p-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm bg-surface border border-border rounded-2xl p-8 flex flex-col gap-5"
-        >
-          <div className="flex flex-col gap-1">
-            <h1 className="font-display font-bold text-xl text-text">Admin Login</h1>
-            <p className="text-xs text-muted">Enter your admin password to continue.</p>
-          </div>
-          <Input
-            type="password"
-            placeholder="Password"
-            value={loginPw}
-            onChange={e => setLoginPw(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleLogin()}
-            label="Password"
-          />
-          {loginErr && <p className="text-xs text-red-400">{loginErr}</p>}
-          <button
-            onClick={handleLogin}
-            className="w-full py-2.5 rounded-lg bg-gradient-to-r from-accent to-[#b87fff] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-          >
-            Login
-          </button>
-        </motion.div>
-      </div>
-    );
-  }
-
   if (!form) return null;
 
   /* ── Admin Panel ─────────────────────────────────────────────────────────── */
@@ -193,7 +153,7 @@ export const AdminPage: React.FC = () => {
             {saved ? <><FiCheck size={13} /> Saved!</> : saving ? 'Saving…' : <><FiSave size={13} /> Save All</>}
           </button>
           <button
-            onClick={() => setAuthed(false)}
+            onClick={async () => { await supabase.auth.signOut(); navigate('/login'); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-muted hover:text-text border border-border hover:border-red-400/30 transition-all"
           >
             <FiLogOut size={13} />

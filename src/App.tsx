@@ -6,6 +6,7 @@ import { Skills } from './components/sections/Skills';
 import { Projects } from './components/sections/Projects';
 import { Contact } from './components/sections/Contact';
 import { AdminPage } from './pages/AdminPage';
+import { Login } from './pages/Login';
 
 function Portfolio() {
   const { data, resumeUrl, loading } = useStorage();
@@ -39,11 +40,12 @@ function Portfolio() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Portfolio />} />
-        <Route path="/admin" element={<AdminPage />} />
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+          <Routes>
+              <Route path="/" element={<Portfolio />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/admin" element={<AdminPage />} />
+          </Routes>
+      </BrowserRouter>
   );
 }
