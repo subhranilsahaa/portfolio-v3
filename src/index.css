@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .grad-text {
+    @apply bg-clip-text text-transparent bg-[linear-gradient(90deg,#7eaaff,#b87fff,#ff7eb3,#7eaaff)] bg-[length:300%_auto] animate-grad-move;
+  }
+}
+
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+}
+.glitch::before {
+  color: #7af;
+  animation: g1 4s infinite steps(1);
+  clip-path: polygon(0 20%, 100% 20%, 100% 42%, 0 42%);
+  opacity: 0;
+}
+.glitch::after {
+  color: #f7a;
+  animation: g2 4s infinite steps(1);
+  clip-path: polygon(0 58%, 100% 58%, 100% 78%, 0 78%);
+  opacity: 0;
+}
+@keyframes g1 {
+  0%, 88%, 100% { opacity: 0; transform: translateX(0); }
+  89% { opacity: .6; transform: translateX(-3px) skewX(-4deg); }
+  92% { opacity: 0; transform: translateX(2px); }
+  95% { opacity: .4; transform: translateX(-1px); }
+}
+@keyframes g2 {
+  0%, 91%, 100% { opacity: 0; transform: translateX(0); }
+  92% { opacity: .5; transform: translateX(3px) skewX(4deg); }
+  95% { opacity: 0; transform: translateX(-2px); }
+  97% { opacity: .3; }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: #1a1d2d;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2d3d;
+}
